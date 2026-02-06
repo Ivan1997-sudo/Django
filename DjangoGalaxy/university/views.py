@@ -19,7 +19,7 @@ class UniversityViewSet(ModelViewSet):
         university = self.get_object()
         uc = UniversityCourse.objects.filter(university=university)
         university_serializer = AllCoursesUniversity(uc, many=True)
-        return Response({f"Университетй {university.name}": [f"Курс: {i["course"]["title"]}, "
+        return Response({f"Университет {university.name}": [f"Курс: {i["course"]["title"]}, "
             f"семестр: {i['semester']}, продолжительность {i['duration_weeks']}"  for i in university_serializer.data]})
 
     @action(detail=True, methods=['get'], url_path="course-stats", url_name="university-course-stats")
