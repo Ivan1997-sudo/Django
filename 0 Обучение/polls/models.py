@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 
 class Question(models.Model):
@@ -27,10 +28,13 @@ class Choice(models.Model):
 class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers")
     choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # добавляем поле user
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['question', 'choice'], name='unique question and choice')
+            models.UniqueConstraint(
+                fields=['question', 'choice', 'user'], name='unique question and choice'
+            )
         ]
 
     def __str__(self):
