@@ -17,9 +17,9 @@ class AnswerSerializer(serializers.ModelSerializer):
         read_only_fields = ["id"]
         fields = ["id", "choice"]
 
-class QuestionSerializer(serializers.ModelSerializer):
+
+class QuestionPreviewSerializer(serializers.ModelSerializer):
     choices = ChoiceSerializer(many=True)
-    answers = AnswerSerializer(many=True, read_only=True)
 
     class Meta:
         model = Question
@@ -28,12 +28,26 @@ class QuestionSerializer(serializers.ModelSerializer):
             "id",
             "question_text",
             "pub_date",
-            "choices",
-            "answers"
+            "choices"
         ]
+
+class QuestionSerializer(QuestionPreviewSerializer):
+    answers = serializers.SerializerMethodField()
+
+    class Meta(QuestionPreviewSerializer.Meta):
+        fields = QuestionPreviewSerializer.Meta.fields + ["answers"]
+
 
     def create(self, validated_data):
         choices = validated_data.pop("choices")
         question = super(QuestionSerializer, self).create(validated_data)
         Choice.objects.bulk_create([Choice(**choice, question=question) for choice in choices])
         return question
+
+    def get_answers(self, obj):
+        user = self.context['request'].user
+        answers = obj.answers.filter(user=user)
+        serializer = AnswerSerializer(answers, many=True)
+        return serializer.data
+
+

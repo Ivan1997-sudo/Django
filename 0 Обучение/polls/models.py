@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import User
+from django.conf import settings
 
 
 class Question(models.Model):
@@ -9,6 +9,12 @@ class Question(models.Model):
 
     def __str__(self):
         return self.question_text if len(self.question_text) < 15 else f"{self.question_text[:15]}..."
+
+    class Meta:
+        permissions = [
+            ("can_answer_question", "Can answer question")
+        ]
+
 
 
 class Choice(models.Model):
@@ -28,7 +34,7 @@ class Choice(models.Model):
 class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers")
     choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # добавляем поле user
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # добавляем поле user
 
     class Meta:
         constraints = [
