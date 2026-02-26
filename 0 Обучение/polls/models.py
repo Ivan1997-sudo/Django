@@ -7,14 +7,13 @@ class Question(models.Model):
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField(default=timezone.now)
 
-    def __str__(self):
-        return self.question_text if len(self.question_text) < 15 else f"{self.question_text[:15]}..."
-
     class Meta:
         permissions = [
             ("can_answer_question", "Can answer question")
         ]
 
+    def __str__(self):
+        return self.question_text if len(self.question_text) < 15 else f"{self.question_text[:15]}..."
 
 
 class Choice(models.Model):

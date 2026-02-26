@@ -37,7 +37,6 @@ class QuestionSerializer(QuestionPreviewSerializer):
     class Meta(QuestionPreviewSerializer.Meta):
         fields = QuestionPreviewSerializer.Meta.fields + ["answers"]
 
-
     def create(self, validated_data):
         choices = validated_data.pop("choices")
         question = super(QuestionSerializer, self).create(validated_data)

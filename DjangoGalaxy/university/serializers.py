@@ -24,7 +24,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
 class UniversityCourseSerializer(serializers.ModelSerializer):
     university = UniversitySerializer()
-    course = CourseSerializer( )
+    course = CourseSerializer()
     class Meta:
         model = UniversityCourse
         read_only_fields = ["id"]
