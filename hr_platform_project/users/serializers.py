@@ -20,7 +20,17 @@ class UserSerializer(serializers.ModelSerializer):
             # Если группа только что создана — добавляем нужные разрешения
             add_resume = Permission.objects.get(codename="add_resume")
             change_resume = Permission.objects.get(codename="change_resume")
+            delete_resume = Permission.objects.get(codename="delete_resume")
             view_resume = Permission.objects.get(codename="view_resume")
             respondents.permissions.set([add_resume, change_resume, view_resume])
+
+            # Создаём группу "Администратор" и даём ей все разрешения
+            admins = Group.objects.create(name="Администратор")
+            admins.permissions.set([add_resume, change_resume, view_resume, delete_resume])
+
+            # Создаём группу "HR-менеджер" и даём ей разрешение на просмотр всех резюме
+            hr = Group.objects.create(name="HR-менеджер")
+            hr.permissions.set([view_resume])
+
         user.groups.add(respondents)
         return user

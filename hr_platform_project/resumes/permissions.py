@@ -4,10 +4,9 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 class ResumePermission(BasePermission):
     def has_permission(self, request, view):
         user = request.user
-
         if not user.is_authenticated:
             return False
-        if request.method in SAFE_METHODS:  # GET, HEAD, OPTIONS
+        if request.method in ("GET", "HEAD", "OPTIONS"):
             return user.has_perm("resumes.view_resume")
         elif request.method == "POST":
             return user.has_perm("resumes.add_resume")
@@ -15,4 +14,16 @@ class ResumePermission(BasePermission):
             return user.has_perm("resumes.change_resume")
         elif request.method == "DELETE":
             return user.has_perm("resumes.delete_resume")
+        return False
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        if request.method in ("GET", "HEAD", "OPTIONS"):
+            return user.has_perm("resumes.view_resume")
+        elif request.method in ("PUT", "PATCH", "DELETE"):
+            #Проверка, если пользователь Кандидат - он может редактировать/удалять только свои резюме
+            if user.groups.filter(name="Кандидат").exists():
+                return obj.user == user
+            #Если пользователь администратор - он может редактировать/удалять все
+            return user.groups.filter(name="Администратор").exists()
         return False

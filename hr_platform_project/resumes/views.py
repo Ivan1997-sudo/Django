@@ -15,7 +15,6 @@ class ResumeViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.groups.filter(name="Кандидат"):
-            resumes = Resume.objects.filter(user=user)
-            return resumes
+        if user.groups.filter(name="Кандидат").exists():
+            return Resume.objects.filter(user=user)
         return Resume.objects.all()
